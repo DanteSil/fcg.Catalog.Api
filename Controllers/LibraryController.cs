@@ -21,9 +21,9 @@ public class LibraryController : ControllerBase
     }
 
     [HttpPost("{gameId:guid}")]
-    public async Task<ActionResult<LibraryItemDto>> Acquire(Guid gameId, CancellationToken cancellationToken)
+    public async Task<ActionResult<OrderPlacedEvent>> PlaceOrder(Guid gameId, CancellationToken cancellationToken)
     {
-        var item = await _libraryService.AcquireAsync(User.GetUserId(), gameId, User.GetUserRole(), cancellationToken);
-        return Created(string.Empty, item);
+        var order = await _libraryService.PlaceOrderAsync(User.GetUserId(), gameId, User.GetUserRole(), cancellationToken);
+        return Accepted(order);
     }
 }

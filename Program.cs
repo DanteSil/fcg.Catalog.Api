@@ -7,7 +7,9 @@ using Fcg.CatalogAPI;
 using Fcg.CatalogAPI.Extensions;
 using Fcg.CatalogAPI.Middleware;
 using Fcg.Application;
+using Fcg.Application.Library;
 using Fcg.Infrastructure;
+using Fcg.Infrastructure.Messaging;
 using Fcg.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,6 +65,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddApplication();
+builder.Services.AddSingleton<IOrderPublisher, RabbitMqOrderPublisher>();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApiAuthenticationResponses();
 

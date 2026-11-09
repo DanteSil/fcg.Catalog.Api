@@ -1,6 +1,5 @@
 using Fcg.Application.Common;
 using Fcg.Domain.Interfaces;
-using Fcg.Domain.Library;
 using Fcg.Domain.Users;
 
 namespace Fcg.Application.Library;
@@ -9,13 +8,13 @@ public class LibraryService
 {
     private readonly ILibraryRepository _library;
     private readonly IGameRepository _games;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IOrderPublisher _orderPublisher;
 
-    public LibraryService(ILibraryRepository library, IGameRepository games, IUnitOfWork unitOfWork)
+    public LibraryService(ILibraryRepository library, IGameRepository games, IOrderPublisher orderPublisher)
     {
         _library = library;
         _games = games;
-        _unitOfWork = unitOfWork;
+        _orderPublisher = orderPublisher;
     }
 
     public async Task<IReadOnlyList<LibraryItemDto>> GetMyLibraryAsync(Guid userId, CancellationToken cancellationToken = default)
@@ -34,7 +33,7 @@ public class LibraryService
         return result;
     }
 
-    public async Task<LibraryItemDto> AcquireAsync(Guid userId, Guid gameId, UserRole actorRole, CancellationToken cancellationToken = default)
+    public async Task<OrderPlacedEvent> PlaceOrderAsync(Guid userId, Guid gameId, UserRole actorRole, CancellationToken cancellationToken = default)
     {
         if (actorRole == UserRole.Admin)
             throw new ForbiddenException("Administradores não adquirem jogos pela biblioteca de usuário.");
@@ -45,10 +44,8 @@ public class LibraryService
         if (await _library.ExistsAsync(userId, gameId, cancellationToken))
             throw new ConflictException("Jogo já está na biblioteca.");
 
-        var item = LibraryItem.Acquire(userId, gameId);
-        await _library.AddAsync(item, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        return new LibraryItemDto(item.Id, game.Id, game.Title, game.Description, game.Price, item.AcquiredAt);
+        var order = new OrderPlacedEvent(Guid.NewGuid(), userId, game.Id, game.Price);
+        await _orderPublisher.PublishAsync(order, cancellationToken);
+        return order;
     }
 }
