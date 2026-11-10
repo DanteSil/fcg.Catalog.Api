@@ -16,6 +16,14 @@ public class LibraryRepository : ILibraryRepository
     public async Task<bool> ExistsAsync(Guid userId, Guid gameId, CancellationToken cancellationToken = default) =>
         await _db.LibraryItems.AnyAsync(x => x.UserId == userId && x.GameId == gameId, cancellationToken);
 
-    public async Task AddAsync(LibraryItem item, CancellationToken cancellationToken = default) =>
-        await _db.LibraryItems.AddAsync(item, cancellationToken);
+    public async Task<bool> AddIfMissingAsync(LibraryItem item, CancellationToken cancellationToken = default)
+    {
+        var inserted = await _db.Database.ExecuteSqlInterpolatedAsync($"""
+            INSERT INTO library_items ("Id", "UserId", "GameId", "AcquiredAt")
+            VALUES ({item.Id}, {item.UserId}, {item.GameId}, {item.AcquiredAt})
+            ON CONFLICT ("UserId", "GameId") DO NOTHING
+            """, cancellationToken);
+
+        return inserted == 1;
+    }
 }

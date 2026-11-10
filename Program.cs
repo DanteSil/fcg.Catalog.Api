@@ -66,6 +66,8 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddApplication();
 builder.Services.AddSingleton<IOrderPublisher, RabbitMqOrderPublisher>();
+if (!string.IsNullOrWhiteSpace(builder.Configuration["RabbitMQ:Uri"]))
+    builder.Services.AddHostedService<PaymentProcessedConsumer>();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApiAuthenticationResponses();
 
