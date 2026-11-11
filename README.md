@@ -19,3 +19,7 @@ O perfil de desenvolvimento usa o RabbitMQ local. Para outro broker, defina `Rab
 3. Confira o status `202 Accepted` e o JSON com `orderId`, `userId`, `gameId` e `price`. O console da PaymentsAPI deve mostrar o mesmo pedido.
 
 O status `202` indica que o broker confirmou a publicação. O catálogo consome `PaymentProcessedEvent` na fila `pagamentos.catalogo`. Após um resultado `Approved`, confira o jogo em `GET /api/library` com o mesmo JWT. Um resultado `Rejected` deixa a biblioteca intacta. Se um resultado aprovado for entregue novamente, a restrição única de usuário e jogo impede duplicatas.
+
+## Kubernetes
+
+Os manifestos deste serviço ficam em k8s/. O script de implantação, a infraestrutura e as instruções para clonar os cinco repositórios estão em https://github.com/DanteSil/fcg.Infrastructure.

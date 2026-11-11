@@ -1,0 +1,14 @@
+{
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "catalog-api-config",
+    "namespace": "fcg"
+  },
+  "data": {
+    "Jwt__Audience": "Fcg.Clients",
+    "ASPNETCORE_HTTP_PORTS": "8080",
+    "Jwt__Issuer": "Fcg.Api",
+    "ASPNETCORE_ENVIRONMENT": "Development"
+  },
+  "kind": "ConfigMap"
+}
