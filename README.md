@@ -5,10 +5,13 @@ CRUD de jogos, promoções e biblioteca. A API valida os JWTs emitidos pela User
 ```powershell
 $env:ConnectionStrings__DefaultConnection = 'Host=localhost;Database=fcg_catalog;Username=postgres;Password=<senha>'
 $env:Jwt__SecretKey = '<mesma chave configurada na UsersAPI>'
+$env:RabbitMQ__Uri = 'amqp://guest:guest@localhost:5672/%2f'
 dotnet run
 ```
 
 A API abre em http://localhost:5102. Use `/swagger` para consultar as rotas e `/health` para verificar que o processo está respondendo. Se sobrescrever `Jwt__Issuer` ou `Jwt__Audience`, use os mesmos valores nos dois serviços.
+
+A execução direta requer .NET 8 SDK, PostgreSQL e RabbitMQ acessíveis. Ajuste as credenciais dos exemplos ao seu ambiente. Para executar a pilha completa com Docker Compose ou Kubernetes, siga o README da infraestrutura indicado abaixo.
 
 ## Teste do pedido via RabbitMQ
 
